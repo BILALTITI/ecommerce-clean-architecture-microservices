@@ -1,0 +1,204 @@
+version: "3.9"
+
+services:
+
+  catalog.api:
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: ..
+      dockerfile: E-Commerace/Services/Catalog/Catalog.Api/Dockerfile
+    ports:
+      - "8000:8080"
+    depends_on:
+      - catalogdb
+      - elasticsearch
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      DatabaseSettings__ConnectionString: mongodb://catalogdb:27017
+      DatabaseSettings__DatabaseName: CatalogDb
+      DatabaseSettings__ProductsCollectionName: Products
+      DatabaseSettings__ProductBrandsCollectionName: ProductBrands
+      DatabaseSettings__ProductTypesCollectionName: ProductTypes
+      ElasticSearch__Url: http://elasticsearch:9200
+      ElasticConfiguration__Uri: http://elasticsearch:9200
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+      - xpack.monitoring.ui.container.elasticsearch.enabled=true
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  catalogdb:
+    image: mongo
+    container_name: catalogdb
+    ports:
+      - "27017:27017"
+    volumes:
+      - catalogdata:/data/db
+
+  basketdb:
+    image: redis:alpine
+    container_name: basketdb
+    restart: always
+    ports:
+      - "6379:6379"
+
+  basket.api:
+    image: ${DOCKER_REGISTRY-}basketapi
+    build:
+      context: ..
+      dockerfile: E-Commerace/Services/Basket/Basket.API/Dockerfile
+    ports:
+      - "8001:8080"
+    depends_on:
+      - basketdb
+      - rabbitmq
+      - elasticsearch
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      CacheSettings__ConnectionString: basketdb:6379
+      GrpcSettings__DiscountUrl: http://discount.api:8080
+      EventBusSettings__HostAddress: amqp://guest:guest@rabbitmq:5672
+      ElasticSearch__Url: http://elasticsearch:9200
+      ElasticConfiguration__Uri: http://elasticsearch:9200
+
+  discountdb:
+    image: postgres
+    container_name: discountdb
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: DiscountDb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d DiscountDb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@eCommerce.net
+      PGADMIN_DEFAULT_PASSWORD: Password@1
+    restart: always
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/root/.pgadmin
+
+  discount.api:
+    image: ${DOCKER_REGISTRY-}discountapi
+    build:
+      context: ..
+      dockerfile: E-Commerace/Services/Discount/Discount.API/Dockerfile
+    container_name: discount.api
+    depends_on:
+      discountdb:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_started
+    ports:
+      - "8004:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ElasticSearch__Url: http://elasticsearch:9200
+      ElasticConfiguration__Uri: http://elasticsearch:9200
+
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: always
+    ports:
+      - "8002:8000"
+      - "9000:9000"
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  orderdb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: orderdb
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - order-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: ..
+      dockerfile: E-Commerace/Services/Ordering/Ordering.API/Dockerfile
+    ports:
+      - "8006:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__OrderingConnectionString: Server=orderdb;Database=OrderingDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
+      GrpcSettings__DiscountUrl: http://discount.api:8080
+      EventBusSettings__HostAddress: amqp://guest:guest@rabbitmq:5672
+      ElasticSearch__Url: http://elasticsearch:9200
+      ElasticConfiguration__Uri: http://elasticsearch:9200
+    depends_on:
+      orderdb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      discount.api:
+        condition: service_started
+      elasticsearch:
+        condition: service_started
+
+volumes:
+  catalogdata:
+  portainer_data:
+  pgadmin_data:
+  order-data:
+  esdata:

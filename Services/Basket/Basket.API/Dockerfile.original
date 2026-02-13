@@ -1,0 +1,33 @@
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base # Use the ASP.NET runtime image as the base
+USER $APP_UID # Use the same user as in the base image to avoid permission issues
+WORKDIR /app # Set the working directory inside the container
+EXPOSE 8080 # For HTTP
+EXPOSE 443 # For HTTPS
+
+# This stage is used to build the service project
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build # Use the .NET SDK image to build the application
+ARG BUILD_CONFIGURATION=Release # Argument to specify the build configuration
+WORKDIR /src # Set the working directory for the build stage
+COPY ["Services/Basket/Basket.API/Basket.API.csproj", "Services/Basket/Basket.API/"] # Copy the project files
+COPY ["Services/Basket/Basket.Api/Basket.Api.csproj", "Services/Basket/Basket.Api/"] # (If there is a separate API project, include it)
+COPY ["Services/Basket/Basket.Application/Basket.Application.csproj", "Services/Basket/Basket.Application/"] # Copy application project
+COPY ["Services/Basket/Basket.Core/Basket.Core.csproj", "Services/Basket/Basket.Core/"] # Copy core project
+COPY ["Services/Basket/Basket.Infrastructure/Basket.Infrastructure.csproj", "Services/Basket/Basket.Infrastructure/"] # Copy infrastructure project
+RUN dotnet restore "./Services/Basket/Basket.API/Basket.API.csproj" # Restore dependencies
+COPY . . # Copy the entire source code
+WORKDIR "/src/Services/Basket/Basket.API" # Set the working directory to the service project
+RUN dotnet build "./Basket.API.csproj" -c $BUILD_CONFIGURATION -o /app/build # Build the project
+
+# This stage is used to publish the service project to be copied to the final stage
+FROM build AS publish # Use the build stage as the base for publishing
+ARG BUILD_CONFIGURATION=Release # Argument to specify the build configuration
+RUN dotnet publish "./Basket.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false # Publish the project
+
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM base AS final # Use the base stage as the final stage
+WORKDIR /app # Set the working directory
+COPY --from=publish /app/publish . # Copy the published output from the publish stage
+ENTRYPOINT ["dotnet", "Basket.API.dll"] # Set the entry point to run the application
