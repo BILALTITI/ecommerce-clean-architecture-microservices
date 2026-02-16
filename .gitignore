@@ -309,8 +309,15 @@ logs/
 # Temporary files
 *.temp
 
+# Ensure Infrastructure directories are tracked (not ignored)
+!**/*Infrastructure*/
+!**/*Infrasture*/
+
+# Project-specific ignores
 /Services/Ledger/Ledger.API/logs
 /Services/IngazMaster/Master.API/logs
-/Services/Shared/Shared.Infrastructure/Migrations/Tenant
-/Services/Shared/Shared.Infrastructure/Migrations
+
+# Shared Infrastructure migrations (if this directory exists, uncomment below)
+# /Services/Shared/Shared.Infrastructure/Migrations/Tenant
+# /Services/Shared/Shared.Infrastructure/Migrations
 

@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
     build:
@@ -195,6 +194,22 @@ services:
         condition: service_started
       elasticsearch:
         condition: service_started
+
+  ocelot.apigateway:
+    image: ${DOCKER_REGISTRY-}ocelotapigateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Ocelot.ApiGateway/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+    depends_on:
+      - catalog.api
+      - basket.api
+      - discount.api
+      - ordering.api
+    ports:
+      - "8010:8080"
 
 volumes:
   catalogdata:

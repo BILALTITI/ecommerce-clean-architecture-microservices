@@ -6,7 +6,7 @@ namespace Basket.API.Controllers
 
 
 
-    [ApiVersion("1")]
+    //[ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
 

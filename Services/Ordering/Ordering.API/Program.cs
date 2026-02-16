@@ -1,3 +1,4 @@
+using EventBusMessages.Common;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.OpenApi;
@@ -46,6 +47,7 @@ builder.Services.AddApplicationServices();
 
 builder.Services.AddInfraService(builder.Configuration);
 builder.Services.AddScoped<BaksetOrderingConsumer>();
+builder.Services.AddScoped<BaksetOrderingConsumerV2>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<BaksetOrderingConsumer>();
@@ -53,9 +55,15 @@ builder.Services.AddMassTransit(x =>
     {
         cfg.Host(builder.Configuration["EventBusSettings:HostAddress"]
             ?? throw new InvalidOperationException("EventBusSettings:HostAddress is not configured."));
-        cfg.ReceiveEndpoint("basket-checkout-queue", e =>
+        cfg.ReceiveEndpoint(EventBasketConstent.BasketCheckoutQueue, e =>
         {
             e.ConfigureConsumer<BaksetOrderingConsumer>(context);
+        });
+       
+        // V2
+        cfg.ReceiveEndpoint(EventBasketConstent.BasketCheckoutQueueV2, e =>
+        {
+            e.ConfigureConsumer<BaksetOrderingConsumerV2>(context);
         });
     });
 });

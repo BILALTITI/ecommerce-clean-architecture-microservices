@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/ApiGateway/">
+    <Project Path="ApiGateway/Ocelot.ApiGateway/Ocelot.ApiGateway.csproj" Id="e351ad04-2434-4ba8-9b72-d666d137e8d7" />
+  </Folder>
   <Folder Name="/Infrastructure/">
     <Project Path="../Common.Logging/Common.Logging.csproj" Id="ad032f9b-9cdb-45d9-bbad-6d568adc06f3" />
     <Project Path="../EventBusMessages/EventBusMessages.csproj" Id="6c63082a-3f39-48c0-ada6-6baf2677fd4e" />

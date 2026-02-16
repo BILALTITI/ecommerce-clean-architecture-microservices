@@ -8,6 +8,7 @@ using MassTransit;
 using MassTransit.MultiBus;
 using Microsoft.OpenApi;
 using Serilog;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,7 +56,17 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
     options.ReportApiVersions = true;
+}).AddApiExplorer(options =>
+{
+
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+
+
+
 });
+builder.Services.AddEndpointsApiExplorer();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen(options =>
 {
@@ -70,6 +81,47 @@ builder.Services.AddSwaggerGen(options =>
             Email = "bilalaltiti@hotmail.com",
             Url = new Uri("https://sooquk.com/ar"),
         }
+    });
+    options.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Title = "Basket.Api",
+        Version = "v2",
+        Description = "This is Basket Service from E-Commerce Application V2 ",
+        Contact = new OpenApiContact
+        {
+            Name = "Bilal-Altiti",
+            Email = "bilalaltiti@hotmail.com",
+            Url = new Uri("https://sooquk.com/ar"),
+        }
+    });
+
+    options.DocInclusionPredicate((version, apiDescription) =>
+    {
+        if (!apiDescription.TryGetMethodInfo(out MethodInfo methodInfo))
+        {
+            return false;
+        }
+        
+        var versions = methodInfo.DeclaringType?
+            .GetCustomAttributes(true)
+            .OfType<Asp.Versioning.ApiVersionAttribute>()
+            .SelectMany(attr => attr.Versions)
+            .ToList();
+        
+        if (versions == null || !versions.Any())
+        {
+            // If no version attribute, it's the default version (v1)
+            return version == "v1";
+        }
+        
+        // Check if any version matches the Swagger doc version
+        return versions.Any(v => 
+        {
+            var versionString = v.ToString();
+            // Handle both "2" and "2.0" formats
+            var normalized = versionString.Replace(".0", "");
+            return $"v{normalized}" == version || $"v{versionString}" == version;
+        });
     });
 });
 
@@ -98,6 +150,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Basket API V1");
+        c.SwaggerEndpoint("/swagger/v2/swagger.json", "Basket API V2");
         c.RoutePrefix = "swagger";
     }); app.MapOpenApi();
 }
