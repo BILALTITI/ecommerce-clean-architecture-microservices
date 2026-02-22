@@ -211,6 +211,17 @@ services:
     ports:
       - "8010:8080"
 
+  shop.identity:
+    image: ${DOCKER_REGISTRY-}shopidentity
+    build:
+      context: ..
+      dockerfile: E-Commerace/Infrastructure/Shop.Identity/Dockerfile
+    ports:
+      - "9009:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+
 volumes:
   catalogdata:
   portainer_data:

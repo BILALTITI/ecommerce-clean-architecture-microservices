@@ -3,8 +3,9 @@
     <Project Path="ApiGateway/Ocelot.ApiGateway/Ocelot.ApiGateway.csproj" Id="e351ad04-2434-4ba8-9b72-d666d137e8d7" />
   </Folder>
   <Folder Name="/Infrastructure/">
-    <Project Path="../Common.Logging/Common.Logging.csproj" Id="ad032f9b-9cdb-45d9-bbad-6d568adc06f3" />
-    <Project Path="../EventBusMessages/EventBusMessages.csproj" Id="6c63082a-3f39-48c0-ada6-6baf2677fd4e" />
+    <Project Path="Infrastructure/Common.Loging/Common.Logging.csproj" Id="f830b787-b1c4-40b0-964d-c60b81abe9a6" />
+    <Project Path="Infrastructure/EventBusMessage/EventBusMessages.csproj" Id="d9a9d9f1-51c7-4979-8b47-59cfcd224175" />
+    <Project Path="Infrastructure/Shop.Identity/Shop.Identity.csproj" />
   </Folder>
   <Folder Name="/Services/" />
   <Folder Name="/Services/Basket/">

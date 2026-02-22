@@ -1,3 +1,4 @@
+using Common.Logging;
 using EventBusMessages.Common;
 using MassTransit;
 using MassTransit.Testing;
@@ -8,11 +9,12 @@ using Ordering.Application.Extensions;
 using Ordering.Infrastructure.Data;
 using Ordering.Infrastructure.Extensions;
 using Serilog;
+using static Azure.Core.HttpHeader;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Host.UseSerilog(Common.Logging.Logging.LoggerConfiguration);
+builder.Host.UseSerilog(Logging.LoggerConfiguration);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

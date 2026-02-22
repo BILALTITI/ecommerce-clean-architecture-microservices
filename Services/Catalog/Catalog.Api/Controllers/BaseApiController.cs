@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog.Api.Controllers
@@ -9,8 +10,8 @@ namespace Catalog.Api.Controllers
         [ApiVersion("1")]
         [Route("api/v{version:apiVersion}/[controller]")]
         [ApiController]
-
-        public class BaseApiController : ControllerBase
+    [Authorize(Policy ="CanRead")]
+         public class BaseApiController : ControllerBase
         {
 
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -7,7 +8,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+var authschema = "EShoppingGatewaySchema";
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(authschema, jwt =>
+{
+
+
+    jwt.Authority = "https://host.docker.internal:9009";
+    jwt.Audience = "EshoppingGateway";
+});
 
 
 builder.Services.AddOpenApi();

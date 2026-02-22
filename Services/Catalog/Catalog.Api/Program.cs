@@ -4,10 +4,16 @@ using Catalog.Core.Repositories;
 using Catalog.Infrastructure.Data.Context;
 using Catalog.Infrastructure.Repositories;
 using Common.Logging;
-using DnsClient;
+using Discount.Core.Entites;
+using DnsClient; 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Serilog;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +32,60 @@ builder.Services.AddMediatR(cfg =>
 });
 
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+
+
+    Options =>
+    {
+        Options.Authority = "https://host.docker.internal:9009";
+        Options.RequireHttpsMetadata = true;
+
+        Options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+
+            ValidateIssuer = true,
+            ValidIssuer= "http://localhost:9009",
+          ValidateAudience=true,
+          ValidAudience= "Catalog",
+          ValidateIssuerSigningKey=true,
+          ClockSkew=TimeSpan.Zero
+
+        };
+
+        Options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback=(message,cart,chain,error)=>true
+        };
+        Options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("❌ Authentication Failed");
+                Console.WriteLine($"Message: {context.Exception.Message}");
+                Console.WriteLine($"StackTrace: {context.Exception.StackTrace}");
+
+                return Task.CompletedTask;
+            }
+        };
+
+    }
+
+);
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CanRead", policy =>
+        policy.RequireClaim("scope", "catalog.read"));
+});
 builder.Services.AddScoped<iCatalogContext,CatalogContext>();
 builder.Services.AddScoped<IBrandRepositreis,ProductRepositoriy>();
 builder.Services.AddScoped<ITypeRepositreis,ProductRepositoriy>();
-builder.Services.AddScoped<IProductRepositreis,ProductRepositoriy>(); 
+builder.Services.AddScoped<IProductRepositreis,ProductRepositoriy>();
 
+var userpolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+
+builder.Services.AddControllers(config => config.Filters.Add(new AuthorizeFilter(userpolicy)));
 builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
@@ -73,7 +128,7 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging(); // This will log all HTTP requests automatically
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

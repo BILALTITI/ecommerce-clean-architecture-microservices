@@ -20,7 +20,8 @@
   <ItemGroup>
     <!-- Infrastructure layer -->
     <!-- Application layer -->
-    <ProjectReference Include="..\..\..\..\Common.Logging\Common.Logging.csproj" />
+    <ProjectReference Include="..\..\..\Infrastructure\Common.Loging\Common.Logging.csproj" />
+    <ProjectReference Include="..\..\..\Infrastructure\EventBusMessage\EventBusMessages.csproj" />
     <ProjectReference Include="..\Discount.Application\Discount.Application.csproj" />
     <ProjectReference Include="..\DiscountInfru\Discount.Infrastructure.csproj" />
   </ItemGroup>

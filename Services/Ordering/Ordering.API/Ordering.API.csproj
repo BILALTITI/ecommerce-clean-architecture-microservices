@@ -30,8 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Common.Logging\Common.Logging.csproj" />
-    <ProjectReference Include="..\..\..\..\EventBusMessages\EventBusMessages.csproj" />
+    <ProjectReference Include="..\..\..\Infrastructure\Common.Loging\Common.Logging.csproj" />
     <ProjectReference Include="..\Ordering.Application\Ordering.Application.csproj" />
     <ProjectReference Include="..\Ordering.Infrastructure\Ordering.Infrastructure.csproj" />
   </ItemGroup>

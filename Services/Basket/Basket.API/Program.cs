@@ -6,6 +6,9 @@ using Basket.Infrasture.Repositories;
 using Common.Logging;
 using MassTransit;
 using MassTransit.MultiBus;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.OpenApi;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -33,8 +36,61 @@ builder.Services.AddMediatR(cfg =>
     );
 });
 
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+
+
+    Options =>
+    {
+        Options.Authority = "https://host.docker.internal:9009";
+        Options.RequireHttpsMetadata = true;
+
+        Options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+
+            ValidateIssuer = true,
+            ValidIssuer = "http://localhost:9009",
+            ValidateAudience = true,
+            ValidAudience = "Basket",
+            ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.Zero
+
+        };
+
+        Options.BackchannelHttpHandler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = (message, cart, chain, error) => true
+        };
+        Options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("❌ Authentication Failed");
+                Console.WriteLine($"Message: {context.Exception.Message}");
+                Console.WriteLine($"StackTrace: {context.Exception.StackTrace}");
+
+                return Task.CompletedTask;
+            }
+        };
+
+    }
+
+);
+ 
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.AddScoped<DiscountGrpcService>();
+
+var userpolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+
+builder.Services.AddControllers(config => config.Filters.Add(new AuthorizeFilter(userpolicy)));
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+});
 
 builder.Services.AddGrpcClient<Discount.Grpc.Protos.DiscountProtoService.DiscountProtoServiceClient>(options =>
 {

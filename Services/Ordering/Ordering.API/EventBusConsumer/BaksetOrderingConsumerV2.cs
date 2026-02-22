@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EventBusMessages.Events;
 using MassTransit;
-using MassTransit.Mediator;
+using MediatR;
 using Ordering.Application.Commands;
 
 namespace Ordering.API.EventBusConsumer
@@ -23,7 +23,7 @@ namespace Ordering.API.EventBusConsumer
             {
                 using var scope = _logger.BeginScope("consuming basket checkout event for {correlationid} From Version 2", context.Message.CreatingId);
                 var cmd = _mapper.Map<CheckoutOrderCommandV2>(context.Message);
-                var result =   _mediator.Send(cmd);
+                var result = await _mediator.Send(cmd);
                 _logger.LogInformation("Basket checkout event completed  From Version 2 !!");
             }
         }
