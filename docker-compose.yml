@@ -211,6 +211,18 @@ services:
     ports:
       - "8010:8080"
 
+  nginx:
+    image: ${DOCKER_REGISTRY-}nginx
+    build:
+      context: ApiGateway/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - ocelot.apigateway
+    restart: unless-stopped
+
   shop.identity:
     image: ${DOCKER_REGISTRY-}shopidentity
     build:

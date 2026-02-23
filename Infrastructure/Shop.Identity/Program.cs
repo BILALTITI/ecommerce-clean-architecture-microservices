@@ -1,5 +1,6 @@
-﻿using Shop.Identity;
+﻿using Microsoft.AspNetCore.HttpOverrides;
 using Serilog;
+using Shop.Identity;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -19,7 +20,15 @@ try
     var app = builder
         .ConfigureServices()
         .ConfigurePipeline();
-    
+    var forwardHeadersOptions = new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    };
+
+    forwardHeadersOptions.KnownNetworks.Clear();
+    forwardHeadersOptions.KnownProxies.Clear();
+
+    app.UseForwardedHeaders(forwardHeadersOptions);
     app.Run();
 }
 catch (Exception ex)

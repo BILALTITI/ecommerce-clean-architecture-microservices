@@ -8,6 +8,7 @@ using MassTransit;
 using MassTransit.MultiBus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.OpenApi;
 using Serilog;
@@ -194,23 +195,36 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 var app = builder.Build();
-
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
     app.UseDeveloperExceptionPage();
-
+    app.MapOpenApi();
+    app.Use((ctx, next) =>
+    {
+        if (ctx.Request.Headers.TryGetValue("X-Forwarded-Prefix", out var prefix) &&
+            !string.IsNullOrEmpty(prefix))
+        {
+            ctx.Request.PathBase = prefix.ToString(); // e.g., "/basket"
+        }
+        return next();
+    });
+    app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Basket API V1");
-        c.SwaggerEndpoint("/swagger/v2/swagger.json", "Basket API V2");
+        // Use *relative* URLs so the /basket prefix is preserved by the browser
+        c.SwaggerEndpoint("v1/swagger.json", "Basket.API v1");   // no leading '/'
+        c.SwaggerEndpoint("v2/swagger.json", "Basket.API v2");   // no leading '/'
         c.RoutePrefix = "swagger";
-    }); app.MapOpenApi();
-}
 
+    });
+}
 app.UseAuthorization();
 
 app.MapControllers();
