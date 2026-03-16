@@ -1,0 +1,15 @@
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.navbar-brand {
+  font-weight: 600;
+  
+  &:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+}
+

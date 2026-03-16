@@ -1,38 +1,43 @@
 <Solution>
   <Folder Name="/ApiGateway/">
-    <Project Path="ApiGateway/Ocelot.ApiGateway/Ocelot.ApiGateway.csproj" Id="e351ad04-2434-4ba8-9b72-d666d137e8d7" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/ApiGateway/Ocelot.ApiGateway/Ocelot.ApiGateway.csproj" Id="e351ad04-2434-4ba8-9b72-d666d137e8d7" />
+  </Folder>
+  <Folder Name="/ApiGateway/nginx/">
+    <File Path="ApiGateway/nginx/nginx.Dockerfile" />
+    <File Path="ApiGateway/nginx/nginx.local.conf" />
+    <File Path="id-local.conf" />
   </Folder>
   <Folder Name="/Infrastructure/">
-    <Project Path="Infrastructure/Common.Loging/Common.Logging.csproj" Id="f830b787-b1c4-40b0-964d-c60b81abe9a6" />
-    <Project Path="Infrastructure/EventBusMessage/EventBusMessages.csproj" Id="d9a9d9f1-51c7-4979-8b47-59cfcd224175" />
-    <Project Path="Infrastructure/Shop.Identity/Shop.Identity.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Infrastructure/Common.Loging/Common.Logging.csproj" Id="f830b787-b1c4-40b0-964d-c60b81abe9a6" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Infrastructure/EventBusMessage/EventBusMessages.csproj" Id="d9a9d9f1-51c7-4979-8b47-59cfcd224175" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Infrastructure/Shop.Identity/Shop.Identity.csproj" />
   </Folder>
   <Folder Name="/Services/" />
   <Folder Name="/Services/Basket/">
-    <Project Path="Services/Basket/Basket.API/Basket.API.csproj" />
-    <Project Path="Services/Basket/Basket.Application/Basket.Application.csproj" />
-    <Project Path="Services/Basket/Basket.Core/Basket.Core.csproj" />
-    <Project Path="Services/Basket/Basket.Infrasture/Basket.Infrasture.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Basket/Basket.API/Basket.API.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Basket/Basket.Application/Basket.Application.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Basket/Basket.Core/Basket.Core.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Basket/Basket.Infrasture/Basket.Infrasture.csproj" />
   </Folder>
   <Folder Name="/Services/Catalog/">
-    <Project Path="Services/Catalog/Catalog.Api/Catalog.Api.csproj" />
-    <Project Path="Services/Catalog/Catalog.Application/Catalog.Application.csproj" />
-    <Project Path="Services/Catalog/Catalog.Core/Catalog.Core.csproj" />
-    <Project Path="Services/Catalog/Catalog.Infrastructure/Catalog.Infrastructure.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Catalog/Catalog.Api/Catalog.Api.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Catalog/Catalog.Application/Catalog.Application.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Catalog/Catalog.Core/Catalog.Core.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Catalog/Catalog.Infrastructure/Catalog.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/Services/Discount/">
-    <Project Path="Services/Discount/Discount.API/Discount.API.csproj" />
-    <Project Path="Services/Discount/Discount.Application/Discount.Application.csproj" />
-    <Project Path="Services/Discount/Discount.Core/Discount.Core.csproj" />
-    <Project Path="Services/Discount/DiscountInfru/Discount.Infrastructure.csproj" Id="1ba8ec1b-1a00-44d4-a4e3-17528de717d0" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Discount/Discount.API/Discount.API.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Discount/Discount.Application/Discount.Application.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Discount/Discount.Core/Discount.Core.csproj" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Discount/DiscountInfru/Discount.Infrastructure.csproj" Id="1ba8ec1b-1a00-44d4-a4e3-17528de717d0" />
   </Folder>
   <Folder Name="/Services/Ordering/">
-    <Project Path="Services/Ordering/Ordering.API/Ordering.API.csproj" Id="3c324519-bf1c-4ee8-b27a-a5e8e28a369e" />
-    <Project Path="Services/Ordering/Ordering.Application/Ordering.Application.csproj" Id="a24c8177-3ab9-4cfd-8425-8964a317a8e7" />
-    <Project Path="Services/Ordering/Ordering.Core/Ordering.Core.csproj" Id="cd1a87e8-012b-4046-8fed-fe81d72495b4" />
-    <Project Path="Services/Ordering/Ordering.Infrastructure/Ordering.Infrastructure.csproj" Id="b37ac10f-ced7-4f19-880e-34347e71ba58" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Ordering/Ordering.API/Ordering.API.csproj" Id="3c324519-bf1c-4ee8-b27a-a5e8e28a369e" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Ordering/Ordering.Application/Ordering.Application.csproj" Id="a24c8177-3ab9-4cfd-8425-8964a317a8e7" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Ordering/Ordering.Core/Ordering.Core.csproj" Id="cd1a87e8-012b-4046-8fed-fe81d72495b4" />
+    <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/Services/Ordering/Ordering.Infrastructure/Ordering.Infrastructure.csproj" Id="b37ac10f-ced7-4f19-880e-34347e71ba58" />
   </Folder>
-  <Project Path="docker-compose.dcproj">
+  <Project Path="../../../../../../OneDrive/Desktop/E-Commearce/E-Commerace/docker-compose.dcproj">
     <Build />
   </Project>
 </Solution>

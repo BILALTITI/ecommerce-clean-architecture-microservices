@@ -30,53 +30,62 @@ builder.Services.AddMediatR(cfg =>
         Assembly.GetAssembly(typeof(GetProductByIdQuery))!
     );
 });
-
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-
-
-    Options =>
-    {
-        Options.Authority = "https://host.docker.internal:9009";
-        Options.RequireHttpsMetadata = true;
-
-        Options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-        {
-
-            ValidateIssuer = true,
-            ValidIssuer= "http://localhost:9009",
-          ValidateAudience=true,
-          ValidAudience= "Catalog",
-          ValidateIssuerSigningKey=true,
-          ClockSkew=TimeSpan.Zero
-
-        };
-
-        Options.BackchannelHttpHandler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback=(message,cart,chain,error)=>true
-        };
-        Options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = context =>
-            {
-                Console.WriteLine("❌ Authentication Failed");
-                Console.WriteLine($"Message: {context.Exception.Message}");
-                Console.WriteLine($"StackTrace: {context.Exception.StackTrace}");
-
-                return Task.CompletedTask;
-            }
-        };
-
-    }
-
-);
-
-builder.Services.AddAuthorization(options =>
+builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CanRead", policy =>
-        policy.RequireClaim("scope", "catalog.read"));
+    options.AddPolicy("corspolicy", policy =>
+    {
+        policy
+            .AllowAnyOrigin()    // allows requests from any domain
+            .AllowAnyMethod()    // allows GET, POST, PUT, DELETE, etc.
+            .AllowAnyHeader();   // allows any headers
+    });
 });
+
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+
+
+//    Options =>
+//    {
+//        Options.Authority = "https://host.docker.internal:9009";
+//        Options.RequireHttpsMetadata = true;
+
+//        Options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+//        {
+
+//            ValidateIssuer = true,
+//            ValidIssuer= "http://localhost:9009",
+//          ValidateAudience=true,
+//          ValidAudience= "Catalog",
+//          ValidateIssuerSigningKey=true,
+//          ClockSkew=TimeSpan.Zero
+
+//        };
+
+//        Options.BackchannelHttpHandler = new HttpClientHandler
+//        {
+//            ServerCertificateCustomValidationCallback=(message,cart,chain,error)=>true
+//        };
+//        Options.Events = new JwtBearerEvents
+//        {
+//            OnAuthenticationFailed = context =>
+//            {
+//                Console.WriteLine("❌ Authentication Failed");
+//                Console.WriteLine($"Message: {context.Exception.Message}");
+//                Console.WriteLine($"StackTrace: {context.Exception.StackTrace}");
+
+//                return Task.CompletedTask;
+//            }
+//        };
+
+//    }
+
+//);
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("CanRead", policy =>
+//        policy.RequireClaim("scope", "catalog.read"));
+//});
 builder.Services.AddScoped<iCatalogContext,CatalogContext>();
 builder.Services.AddScoped<IBrandRepositreis,ProductRepositoriy>();
 builder.Services.AddScoped<ITypeRepositreis,ProductRepositoriy>();
@@ -147,7 +156,8 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging(); // This will log all HTTP requests automatically
 
 app.UseRouting();
-app.UseAuthentication();
+//app.UseAuthentication();
+app.UseCors("corspolicy");
 app.UseAuthorization();
 
 app.MapControllers();

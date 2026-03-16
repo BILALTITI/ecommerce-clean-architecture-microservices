@@ -218,7 +218,7 @@ services:
       dockerfile: Dockerfile
     container_name: nginx
     ports:
-      - "80:80"
+      - "8003:80"
     depends_on:
       - ocelot.apigateway
     restart: unless-stopped

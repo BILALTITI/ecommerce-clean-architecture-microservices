@@ -4,6 +4,7 @@ using Catalog.Application.Queries;
 using Catalog.Application.Responses;
 using Catalog.Core.Spaces;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,7 @@ namespace Catalog.Api.Controllers
 
         [HttpGet]
         [Route("[action]/{id}",Name ="GetProductById")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType((int)StatusCodes.Status404NotFound)]
         [ProducesResponseType((int)StatusCodes.Status400BadRequest)]
@@ -59,6 +61,7 @@ namespace Catalog.Api.Controllers
 
         [HttpGet]
         [Route("[action]/{name}", Name = "GetProductByName")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(ProductResponseDto), StatusCodes.Status200OK)]
         [ProducesResponseType((int)StatusCodes.Status404NotFound)]
         [ProducesResponseType((int)StatusCodes.Status400BadRequest)]
@@ -95,6 +98,7 @@ namespace Catalog.Api.Controllers
         }
         [HttpGet]
         [Route("GetAllProduct")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(Pagination<ProductResponseDto>), StatusCodes.Status200OK)]
          public async Task<ActionResult<Pagination<ProductResponseDto>>> GetAllProducts([FromQuery] CatalogSpecParam spec)
         {
